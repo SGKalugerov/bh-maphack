@@ -31,10 +31,6 @@ void ScreenInfo::OnLoad() {
 	L"Amplify Damage", L"Weaken", L"Decrepify", L"Lower Resist", L"Poisoned", L"Frozen"	};
 	
 
-	d2VersionText = new Texthook(OutOfGame, 795, 18, D2Version::GetHumanReadableVersion());
-	d2VersionText->SetAlignment(Right);
-	d2VersionText->SetColor(White);
-	d2VersionText->SetFont(1);
 
 	if (BH::cGuardLoaded) {
 		Texthook* cGuardText = new Texthook(Perm, 790, 23, "�c4cGuard Loaded");
@@ -381,7 +377,7 @@ void ScreenInfo::OnDraw() {
 	UnitAny* pUnit = D2CLIENT_GetPlayerUnit();
 	currentExperience = (int)D2COMMON_GetUnitStat(pUnit, STAT_EXP, 0);
 	currentLevel = (int)D2COMMON_GetUnitStat(pUnit, STAT_LEVEL, 0);
-
+	
 	endTimer = ((GetTickCount() - gameTimer) / 1000);
 	if (startLevel == 0) { startLevel = currentLevel; }
 
@@ -408,7 +404,7 @@ void ScreenInfo::OnDraw() {
 
 	char xpPerSec[32];
 	FormattedXPPerSec(xpPerSec, currentExpPerSecond);
-
+	
 	if (Toggles["Experience Meter"].state) {
 		sprintf_s(sExp, "%00.2f%% (%s%00.2f%%) | Time to level: %s",
 			pExp, currentExpGainPct >= 0 ? "+" : "", currentExpGainPct, timeToLevelFormatted);

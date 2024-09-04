@@ -4,6 +4,8 @@
 #include "../Basic/Boxhook/Boxhook.h"
 #include "../../D2Ptrs.h"
 #include "../../BH.h"
+#include "../../D2Helpers.h"
+#include "../../HeroBreakpoints.h"
 
 using namespace Drawing;
 
@@ -235,19 +237,29 @@ void StatsDisplay::OnDraw() {
 				(int)D2COMMON_GetUnitStat(unit, STAT_SECONDARYMAXIMUMDAMAGE, 0));
 
 		y += 8;
+		int currentFcr = (int)D2COMMON_GetUnitStat(unit, STAT_FASTERCAST, 0);
+		int fcrFrame = getCurrentFCRFrame(classNum, currentFcr);
+		
+		Texthook::Draw(column1, (y += 16), None, 6, Gold,
+			L"Cast Rate:\377c0 %d (%d)",
+			currentFcr, fcrFrame
+		);
+
+		int currentFbr = (int)D2COMMON_GetUnitStat(unit, STAT_FASTERBLOCK, 0);
+		int fbrFrame = getCurrentFBRFrame(classNum, currentFbr);
+		Texthook::Draw(column1, (y += 16), None, 6, Gold,
+			L"Block Rate:\377c0 %d (%d)",
+			currentFbr, fbrFrame
+		);
+	
+		int currentFhr = (int)D2COMMON_GetUnitStat(unit, STAT_FASTERHITRECOVERY, 0);
+		int fhrFrame = getCurrentFHRFrame(classNum, currentFhr);
 
 		Texthook::Draw(column1, (y += 16), None, 6, Gold,
-				L"Cast Rate:\377c0 %d",
-				(int)D2COMMON_GetUnitStat(unit, STAT_FASTERCAST, 0)
-				);
-		Texthook::Draw(column2, y, None, 6, Gold,
-				L"Block Rate:\377c0 %d",
-				(int)D2COMMON_GetUnitStat(unit, STAT_FASTERBLOCK, 0)
-				);
-		Texthook::Draw(column1, (y += 16), None, 6, Gold,
-				L"Hit Recovery:\377c0 %d",
-				(int)D2COMMON_GetUnitStat(unit, STAT_FASTERHITRECOVERY, 0)
-				);
+			L"Hit Recovery:\377c0 %d (%d)",
+			currentFhr, fhrFrame
+		);
+	
 		Texthook::Draw(column2, y, None, 6, Gold,
 				L"Run/Walk:\377c0 %d",
 				(int)D2COMMON_GetUnitStat(unit, STAT_FASTERRUNWALK, 0)
