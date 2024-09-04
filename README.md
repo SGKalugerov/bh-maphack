@@ -7,6 +7,8 @@ This maphack is based on BH maphack, written by McGod from the blizzhackers
 forum. It was extensively customized for the slashdiablo realm by Deadlock39,
 who created versions 0.1.1 and 0.1.2.
 
+Further modified by the Auratum D2 server community.
+
 Currently works with client versions 1.13c and 1.13d
 
 Major features include:
