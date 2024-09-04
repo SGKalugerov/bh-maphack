@@ -388,19 +388,32 @@ void ScreenInfo::OnDraw() {
 	char sExp[255] = { 0 };
 	double oldPctExp = ((double)startExperience - ExpByLevel[startLevel - 1]) / (ExpByLevel[startLevel] - ExpByLevel[startLevel - 1]) * 100.0;
 	double pExp = ((double)currentExperience - ExpByLevel[currentLevel - 1]) / (ExpByLevel[currentLevel] - ExpByLevel[currentLevel - 1]) * 100.0;
+	
 	currentExpGainPct = pExp - oldPctExp;
 	if (currentLevel > startLevel) {
 		currentExpGainPct = (100 - oldPctExp) + pExp + ((currentLevel - startLevel) - 1) * 100;
 	}
 	currentExpPerSecond = endTimer > 0 ? (currentExperience - startExperience) / (double)endTimer : 0;
+
+	double remainingExpToLevel = ExpByLevel[currentLevel] - currentExperience;
+
+	double timeToLevelInSeconds = currentExpPerSecond > 0 ? remainingExpToLevel / currentExpPerSecond : 0;
+
+	int hours = static_cast<int>(timeToLevelInSeconds / 3600);
+	int minutes = static_cast<int>((timeToLevelInSeconds / 60)) % 60;
+	int seconds = static_cast<int>(timeToLevelInSeconds) % 60;
+
+	char timeToLevelFormatted[64];
+	sprintf_s(timeToLevelFormatted, sizeof(timeToLevelFormatted), "%02d:%02d:%02d", hours, minutes, seconds);
+
 	char xpPerSec[32];
 	FormattedXPPerSec(xpPerSec, currentExpPerSecond);
 
 	if (Toggles["Experience Meter"].state) {
-		sprintf_s(sExp, "%00.2f%% (%s%00.2f%%) [%s]", pExp, currentExpGainPct >= 0 ? "+" : "", currentExpGainPct, xpPerSec);
-		Texthook::Draw((*p_D2CLIENT_ScreenSizeX / 2) - 100, *p_D2CLIENT_ScreenSizeY - 60, Center, 6, White, "%s", sExp);
+		sprintf_s(sExp, "%00.2f%% (%s%00.2f%%) | Time to level: %s",
+			pExp, currentExpGainPct >= 0 ? "+" : "", currentExpGainPct, timeToLevelFormatted);
+		Texthook::Draw((*p_D2CLIENT_ScreenSizeX / 2) - 150, *p_D2CLIENT_ScreenSizeY - 60, Center, 6, White, "%s", sExp);
 	}
-
 
 	char gameTime[20];
 	sprintf_s(gameTime, 20, "%.2d:%.2d:%.2d", endTimer / 3600, (endTimer / 60) % 60, endTimer % 60);
