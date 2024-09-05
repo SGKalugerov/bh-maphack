@@ -9,7 +9,6 @@ I am merely extending it for the needs of our server's playerbase (www.auratum.n
 Feel free to use it, fork it or whatever, just make sure you give credits to the original authors.
 
 # Changelog
-===========
 
 - Removed some ugly overlay texts
 - Added FCR/FHR/FBR breakpoints to the player stats menu
