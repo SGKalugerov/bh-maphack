@@ -12,7 +12,7 @@ Feel free to use it, fork it or whatever, just make sure you give credits to the
 
 - Removed some ugly overlay texts
 - Added FCR/FHR/FBR breakpoints to the player stats menu
-- Added session/lifetime kill trackers
+- Added session/lifetime kill trackers. Lifetime kills are stored in "statistics.json" file in the folder of the game.
 - Added "Time to level up" tracker
 - Removed XP/s tracker
 - Modified "Autofill game" to append a number in case the game name contains only A-Z, so you don't have to start your runs with a number
