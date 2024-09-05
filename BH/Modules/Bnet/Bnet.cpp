@@ -1,6 +1,7 @@
 #include "Bnet.h"
 #include "../../D2Ptrs.h"
 #include "../../BH.h"
+#include "../../SessionStatistics.h"
 
 unsigned int Bnet::failToJoin;
 std::string Bnet::lastName;
@@ -96,12 +97,15 @@ void Bnet::OnGameJoin() {
 	else
 		lastDesc = "";
 
+	SessionStatistics::loadStatistics("statistics.json");
+	SessionStatistics::resetCurrentKillCount();
+
 	RemovePatches();
 }
 
 void Bnet::OnGameExit() {
 	std::smatch match;
-
+	SessionStatistics::saveStatistics("statistics.json");
 	// Check if the game name has a number at the end using the current regex
 	if (std::regex_search(Bnet::lastName, match, Bnet::reg) && match.size() == 3) {
 		// Extract the base name and the number part

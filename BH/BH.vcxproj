@@ -183,6 +183,7 @@ if defined D2Path (
     <ClCompile Include="Mustache.cpp" />
     <ClCompile Include="Patch.cpp" />
     <ClCompile Include="Modules\StashExport\StashExport.cpp" />
+    <ClCompile Include="SessionStatistics.cpp" />
     <ClCompile Include="TableReader.cpp" />
     <ClCompile Include="Task.cpp" />
   </ItemGroup>
@@ -219,6 +220,7 @@ if defined D2Path (
     <ClInclude Include="Drawing\UI\UI.h" />
     <ClInclude Include="Drawing\UI\UITab.h" />
     <ClInclude Include="HeroBreakpoints.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="JSONObject.h" />
     <ClInclude Include="Modules.h" />
     <ClInclude Include="Modules\AutoTele\ATIncludes\ArrayEx.h" />
@@ -245,6 +247,7 @@ if defined D2Path (
     <ClInclude Include="Mustache.h" />
     <ClInclude Include="Patch.h" />
     <ClInclude Include="Modules\StashExport\StashExport.h" />
+    <ClInclude Include="SessionStatistics.h" />
     <ClInclude Include="TableReader.h" />
     <ClInclude Include="Task.h" />
   </ItemGroup>

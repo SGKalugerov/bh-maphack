@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <numeric>
 #include <filesystem>
+#include "../../SessionStatistics.h"
 
 using namespace Drawing;
 
@@ -406,8 +407,11 @@ void ScreenInfo::OnDraw() {
 	FormattedXPPerSec(xpPerSec, currentExpPerSecond);
 	
 	if (Toggles["Experience Meter"].state) {
-		sprintf_s(sExp, "%00.2f%% (%s%00.2f%%) | Time to level: %s",
-			pExp, currentExpGainPct >= 0 ? "+" : "", currentExpGainPct, timeToLevelFormatted);
+		uint64_t killCount = SessionStatistics::getCurrentKillCount();
+
+		sprintf_s(sExp, "%00.2f%% (%s%00.2f%%) | Time to level: %s | Kills: %d",
+			pExp, currentExpGainPct >= 0 ? "+" : "", currentExpGainPct, timeToLevelFormatted, killCount);
+
 		Texthook::Draw((*p_D2CLIENT_ScreenSizeX / 2) - 150, *p_D2CLIENT_ScreenSizeY - 60, Center, 6, White, "%s", sExp);
 	}
 

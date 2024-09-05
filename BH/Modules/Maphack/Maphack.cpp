@@ -12,6 +12,7 @@
 #include "../Item/Item.h"
 #include "../../AsyncDrawBuffer.h"
 #include "../ScreenInfo/ScreenInfo.h"
+#include "../../SessionStatistics.h"
 
 #pragma optimize( "", off)
 
@@ -35,7 +36,6 @@ Patch* skipNpcMessages4 = new Patch(Call, D2CLIENT, { 0x7E9B7, 0x77737 }, (int)N
 static BOOL fSkipMessageReq = 0;
 static DWORD mSkipMessageTimer = 0;
 static DWORD mSkipQuestMessage = 1;
-
 DrawDirective automapDraw(true, 5);
 
 Maphack::Maphack() : Module("Maphack") {
@@ -246,14 +246,13 @@ void Maphack::OnLoad() {
 	diabloDeadMessage->Install();
 
 	settingsTab = new UITab("Maphack", BH::settingsUI);
-
 	new Texthook(settingsTab, 80, 3, "Toggles");
 	unsigned int Y = 0;
 	int keyhook_x = 150;
 	int col2_x = 250;
 	new Checkhook(settingsTab, 4, (Y += 15), &Toggles["Auto Reveal"].state, "Auto Reveal");
 	new Keyhook(settingsTab, keyhook_x, (Y + 2), &Toggles["Auto Reveal"].toggle, "");
-
+	
 	new Checkhook(settingsTab, 4, (Y += 15), &Toggles["Show Monsters"].state, "Show Monsters");
 	new Keyhook(settingsTab, keyhook_x, (Y + 2), &Toggles["Show Monsters"].toggle, "");
 
@@ -482,6 +481,13 @@ void Maphack::OnAutomapDraw() {
 			for (UnitAny* unit = room1->pUnitFirst; unit; unit = unit->pListNext) {
 				//POINT automapLoc;
 				DWORD xPos, yPos;
+
+				// Kill counter
+				if (unit->dwType == UNIT_MONSTER && (unit->dwMode == 0 || unit->dwMode == 12)) {
+					if (!SessionStatistics::hasUnitBeenKilled(unit->dwUnitId)) {
+						SessionStatistics::addKilledUnit(unit->dwUnitId);
+					}
+				}
 
 				// Draw monster on automap
 				if (unit->dwType == UNIT_MONSTER && IsValidMonster(unit) && Toggles["Show Monsters"].state) {
