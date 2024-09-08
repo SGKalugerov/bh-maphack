@@ -141,9 +141,9 @@ void StatsDisplay::OnDraw() {
 		pRect.left = GetX();
 		pRect.top = y;
 		pRect.right = x + GetXSize();
-		pRect.bottom = y + GetYSize();
+		pRect.bottom = y + GetYSize() + 75;
 
-		Drawing::Boxhook::Draw(GetX(),GetY(), GetXSize(), GetYSize(), White, Drawing::BTBlack);
+		Drawing::Boxhook::Draw(GetX(),GetY(), GetXSize(), GetYSize() + 75, White, Drawing::BTBlack);
 		Drawing::Framehook::DrawRectStub(&pRect);
 
 		Texthook::Draw(column1, (y += 8), None, 6, Gold,
@@ -365,6 +365,25 @@ void StatsDisplay::OnDraw() {
 
 		Texthook::Draw(column2, y, None, 6, Gold,
 			L"Dury Bugged:\377c0 %s", !hasDuryQuest ? L"n/a" : (D2COMMON_GetQuestFlag(quests, THE_SEVEN_TOMBS, QFLAG_CUSTOM_1) ? L"no" : L"yes"));
+		y += 16;
+		int strength = (int)D2COMMON_GetUnitStat(unit, STAT_STRENGTH, 0);
+		int vitality = (int)D2COMMON_GetUnitStat(unit, STAT_VITALITY, 0);
+		int dexterity = (int)D2COMMON_GetUnitStat(unit, STAT_DEXTERITY, 0);
+		int energy = (int)D2COMMON_GetUnitStat(unit, STAT_ENERGY, 0);
+
+		int baseStrength = (int)D2COMMON_GetBaseStatSigned(unit, STAT_STRENGTH, 0);
+		int baseVitality = (int)D2COMMON_GetBaseStatSigned(unit, STAT_VITALITY, 0);
+		int baseDexterity = (int)D2COMMON_GetBaseStatSigned(unit, STAT_DEXTERITY, 0);
+		int baseEnergy = (int)D2COMMON_GetBaseStatSigned(unit, STAT_ENERGY, 0);
+
+		Texthook::Draw(column1, (y += 16), None, 6, Gold,
+			L"Strength:\377c0 %d (%d)", strength, baseStrength);
+		Texthook::Draw(column2, y, None, 6, Gold,
+			L"Vitality:\377c0 %d (%d)", vitality, baseVitality);
+		Texthook::Draw(column1, (y += 16), None, 6, Gold,
+			L"Dexterity:\377c0 %d (%d)", dexterity, baseDexterity);
+		Texthook::Draw(column2, y, None, 6, Gold,
+			L"Energy:\377c0 %d (%d)", energy, baseEnergy);
 
 		if (customStats.size() > 0) {
 			y += 8;
