@@ -16,3 +16,4 @@ Feel free to use it, fork it or whatever, just make sure you give credits to the
 - Added "Time to level up" tracker
 - Removed XP/s tracker
 - Modified "Autofill game" to append a number in case the game name contains only A-Z, so you don't have to start your runs with a number
+- Added stats and base stats display to the player stats menu
