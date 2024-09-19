@@ -675,12 +675,16 @@ void Maphack::OnAutomapDraw() {
 				else if (unit->dwType == UNIT_OBJECT && !unit->dwMode /* Not opened */ && Toggles["Show Chests"].state && IsObjectChest(unit->pObjectData->pTxt)) {
 					xPos = unit->pObjectPath->dwPosX;
 					yPos = unit->pObjectPath->dwPosY;
-					automapBuffer.push([xPos, yPos]()->void{
+					bool isLocked = unit->pObjectData->ChestLocked;
+					unsigned int chestColor = isLocked ? 0x09 : 0x0C;
+					unsigned int chestSize = isLocked ? 6 : 4; 
+
+					automapBuffer.push([xPos, yPos, chestColor, chestSize]() -> void {
 						POINT automapLoc;
 						Drawing::Hook::ScreenToAutomap(&automapLoc, xPos, yPos);
-						Drawing::Boxhook::Draw(automapLoc.x - 1, automapLoc.y - 1, 2, 2, 255, Drawing::BTHighlight);
-					});
-				}				
+						Drawing::Boxhook::Draw(automapLoc.x - 1, automapLoc.y - 1, chestSize, chestSize, chestColor, Drawing::BTHighlight);
+						});
+}
 			}
 		}
 		if (lkLinesColor > 0 && player->pPath->pRoom1->pRoom2->pLevel->dwLevelNo == MAP_A3_LOWER_KURAST) {
