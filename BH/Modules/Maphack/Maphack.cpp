@@ -13,6 +13,7 @@
 #include "../../AsyncDrawBuffer.h"
 #include "../ScreenInfo/ScreenInfo.h"
 #include "../../SessionStatistics.h"
+using namespace D2Version;
 
 #pragma optimize( "", off)
 
@@ -32,7 +33,7 @@ Patch* skipNpcMessages2 = new Patch(Call, D2CLIENT, { 0x48BD6, 0x7B4C6 }, (int)N
 Patch* skipNpcMessages3 = new Patch(Call, D2CLIENT, { 0x4819F, 0x7A9CF }, (int)NPCQuestMessageEndPatch2_ASM, 5);
 Patch* skipNpcMessages4 = new Patch(Call, D2CLIENT, { 0x7E9B7, 0x77737 }, (int)NPCMessageLoopPatch_ASM, 6);
 
-
+bool isMapRevealed = false;
 static BOOL fSkipMessageReq = 0;
 static DWORD mSkipMessageTimer = 0;
 static DWORD mSkipQuestMessage = 1;
@@ -180,6 +181,7 @@ void Maphack::ReadConfig() {
 
 void Maphack::ResetRevealed() {
 	revealedGame = false;
+	isMapRevealed = false;
 	for (int act = 0; act < 6; act++)
 		revealedAct[act] = false;
 	for (int level = 0; level < 255; level++)
@@ -361,18 +363,30 @@ void Maphack::OnLoop() {
 	UnitAny* unit = D2CLIENT_GetPlayerUnit();
 	if (!unit || !Toggles["Auto Reveal"].state)
 		return;
-	
-	// Reveal the automap based on configuration.
-	switch((MaphackReveal)revealType) {
+
+	if (GetHumanReadableVersion() == "1.13c") {
+		// Reveal the automap based on configuration.
+		switch ((MaphackReveal)revealType) {
 		case MaphackRevealGame:
-			RevealGame();
-		break;
+			if (!isMapRevealed) {
+				RevealGame();
+				isMapRevealed = true;
+			}
+			break;
 		case MaphackRevealAct:
 			RevealAct(unit->pAct->dwAct + 1);
-		break;
+			break;
 		case MaphackRevealLevel:
 			RevealLevel(unit->pPath->pRoom1->pRoom2->pLevel);
-		break;
+			break;
+		}
+	}
+	if(GetHumanReadableVersion() == "1.13d") {
+		if (!isMapRevealed) {
+			RevealGame();
+			isMapRevealed = true;
+		}
+		RevealLevel(unit->pPath->pRoom1->pRoom2->pLevel);
 	}
 }
 
