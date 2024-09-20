@@ -18,3 +18,5 @@ Feel free to use it, fork it or whatever, just make sure you give credits to the
 - Modified "Autofill game" to append a number in case the game name contains only A-Z, so you don't have to start your runs with a number
 - Added stats and base stats display to the player stats menu
 - Increased chest size and made locked chests have orange color on the minimap
+- (1.13d) Added workaround for - Reveal Type Game/Act doesn't reveal certain levels, mainly ones whose entrance is a Red Portal. Pindle area, Nihlatak Temple, Arcane, Duriel.
+- (1.13d) Commented out ChannelInput intercept
