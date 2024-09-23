@@ -416,8 +416,6 @@ void StatsDisplay::OnDraw() {
 			Skill* skill = skills[i];
 
 			if (skill && skill->pSkillInfo) {
-				SkillDescTxt* skillsDesc;
-				skillsDesc = GetSkillRow(skill->pSkillInfo->wSkillId, mercUnit);
 				std::string skillName;
 
 				auto sk = Tables::Skills.binarySearch("Id", skill->pSkillInfo->wSkillId);
