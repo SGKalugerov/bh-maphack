@@ -10,13 +10,14 @@ Feel free to use it, fork it or whatever, just make sure you give credits to the
 
 # Changelog
 
-- Removed some ugly overlay texts
-- Added FCR/FHR/FBR breakpoints to the player stats menu
+- Removed some ugly overlay texts.
+- Added FCR/FHR/FBR breakpoints to the player stats menu.
 - Added session/lifetime kill trackers. Lifetime kills are stored in "statistics.json" file in the folder of the game.
-- Added "Time to level up" tracker
-- Removed XP/s tracker
-- Modified "Autofill game" to append a number in case the game name contains only A-Z, so you don't have to start your runs with a number
-- Added stats and base stats display to the player stats menu
-- Increased chest size and made locked chests have orange color on the minimap
+- Added "Time to level up" tracker.
+- Removed XP/s tracker.
+- Modified "Autofill game" to append a number in case the game name contains only A-Z, so you don't have to start your runs with a number.
+- Added stats and base stats display to the player stats menu.
+- Increased chest size and made locked chests have orange color on the minimap.
 - (1.13d) Added workaround for - Reveal Type Game/Act doesn't reveal certain levels, mainly ones whose entrance is a Red Portal. Pindle area, Nihlatak Temple, Arcane, Duriel.
-- (1.13d) Commented out ChannelInput intercept
+- (1.13d) Commented out ChannelInput intercept.
+- Added Merc's skills and levels in the StatDisplay menu (8).
