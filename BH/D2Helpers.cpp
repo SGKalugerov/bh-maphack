@@ -244,6 +244,58 @@ bool GetSkill(WORD wSkillId)
 	return 0;
 }
 
+SkillDescTxt* GetSkillRow(int nSkillId, UnitAny* pUnit) {
+	SkillsTxt* pSkillTxt = nullptr;
+	SkillDescTxt* pSkillDescTxt = nullptr;
+	if (pUnit == nullptr) {
+		pSkillDescTxt;
+	}
+
+	if (nSkillId < 0) {
+		pSkillDescTxt;
+	}
+
+	pSkillTxt = &(*p_D2COMMON_sgptDataTable)->pSkillsTxt[nSkillId];
+	if (pSkillTxt == nullptr) {
+		pSkillDescTxt;
+	}
+	pSkillDescTxt = &(*p_D2COMMON_sgptDataTable)->pSkillDescTxt[pSkillTxt->wSkillDesc];
+	if (pSkillDescTxt == nullptr) {
+		pSkillDescTxt;
+	}
+	return pSkillDescTxt;
+
+}
+
+Skill* GetSkillStruct(UnitAny* unit, int wSkillId)
+{
+	if (!unit)
+		return nullptr;
+	
+	for (Skill* pSkill = unit->pInfo->pFirstSkill; pSkill; pSkill = pSkill->pNextSkill)
+		if (pSkill->pSkillInfo->wSkillId == wSkillId)
+			return pSkill;
+
+	return nullptr;
+}
+
+std::vector<Skill*> GetSkillList(UnitAny* unit)
+{
+	std::vector<Skill*> skillList;
+
+	if (!unit)
+		return skillList; 
+
+	for (Skill* pSkill = unit->pInfo->pFirstSkill; pSkill; pSkill = pSkill->pNextSkill)
+	{
+		if (pSkill) {
+			skillList.push_back(pSkill);
+		}
+	}
+
+	return skillList;
+}
+
 bool SetSkill(WORD wSkillId, bool Left)
 {
 	if (!D2CLIENT_GetPlayerUnit())

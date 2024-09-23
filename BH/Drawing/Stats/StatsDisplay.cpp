@@ -6,11 +6,18 @@
 #include "../../BH.h"
 #include "../../D2Helpers.h"
 #include "../../HeroBreakpoints.h"
+#include "../../Modules/Item/Item.h"
+#include "../../D2Strings.h"
+#include "../../TableReader.h"
+#include <codecvt>
 
 using namespace Drawing;
 
 StatsDisplay *StatsDisplay::display;
-
+std::wstring stringToWString(const std::string& str) {
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.from_bytes(str);
+}
 StatsDisplay::StatsDisplay(std::string name) {
 	int yPos = 10;
 	int width = 240;
@@ -127,7 +134,7 @@ void StatsDisplay::OnDraw() {
 		return;
 	int column1 = GetX() + 5;
 	int column2 = column1 + GetXSize() / 2;
-
+	int column3 = column2 + GetXSize() / 2 + 10;
 	if (!IsMinimized()) {
 		if (D2CLIENT_GetUIState(UI_MERC)) {
 			unit = D2CLIENT_GetMercUnit();
@@ -140,10 +147,10 @@ void StatsDisplay::OnDraw() {
 		RECT pRect;
 		pRect.left = GetX();
 		pRect.top = y;
-		pRect.right = x + GetXSize();
+		pRect.right = x + GetXSize() + 200;
 		pRect.bottom = y + GetYSize() + 75;
 
-		Drawing::Boxhook::Draw(GetX(),GetY(), GetXSize(), GetYSize() + 75, White, Drawing::BTBlack);
+		Drawing::Boxhook::Draw(GetX(), GetY(), GetXSize() + 200, GetYSize() + 75, White, Drawing::BTBlack);
 		Drawing::Framehook::DrawRectStub(&pRect);
 
 		Texthook::Draw(column1, (y += 8), None, 6, Gold,
@@ -399,6 +406,32 @@ void StatsDisplay::OnDraw() {
 				}
 			}
 		}
+
+		UnitAny* mercUnit = D2CLIENT_GetMercUnit();
+		std::vector<Skill*> skills = GetSkillList(mercUnit);
+		int mercY = 40;
+		Texthook::Draw(column3, mercY, None, 6, Gold,
+			L"Mercenary");
+		for (unsigned int i = 0; i < skills.size(); i++) {
+			Skill* skill = skills[i];
+
+			if (skill && skill->pSkillInfo) {
+				SkillDescTxt* skillsDesc;
+				skillsDesc = GetSkillRow(skill->pSkillInfo->wSkillId, mercUnit);
+				std::string skillName;
+
+				auto sk = Tables::Skills.binarySearch("Id", skill->pSkillInfo->wSkillId);
+				if (sk) {
+					skillName = sk->getString("skill");
+
+					std::wstring skillNameW = stringToWString(skillName);
+
+					Texthook::Draw(column3, (mercY += 16), None, 6, Gold,
+						L"%ls: %d", skillNameW.c_str(), skill->dwSkillLevel);
+				}
+			}
+		}
+
 	}
 }
 
