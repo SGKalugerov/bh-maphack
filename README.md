@@ -21,3 +21,4 @@ Feel free to use it, fork it or whatever, just make sure you give credits to the
 - (1.13d) Added workaround for - Reveal Type Game/Act doesn't reveal certain levels, mainly ones whose entrance is a Red Portal. Pindle area, Nihlatak Temple, Arcane, Duriel.
 - (1.13d) Commented out ChannelInput intercept.
 - Added Merc's skills and levels in the StatDisplay menu (8).
+- Added autostasher for jewels, runes and gems.
