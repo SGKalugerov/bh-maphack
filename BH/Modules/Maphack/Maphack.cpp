@@ -690,7 +690,7 @@ void Maphack::OnAutomapDraw() {
 					xPos = unit->pObjectPath->dwPosX;
 					yPos = unit->pObjectPath->dwPosY;
 					bool isLocked = unit->pObjectData->ChestLocked;
-					unsigned int chestColor = isLocked ? 0x09 : 0x0C;
+					unsigned int chestColor = isLocked ? 0x0A : 0x0C;
 					unsigned int chestSize = isLocked ? 6 : 4; 
 
 					automapBuffer.push([xPos, yPos, chestColor, chestSize]() -> void {

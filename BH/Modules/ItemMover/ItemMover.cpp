@@ -332,7 +332,7 @@ void ItemMover::OnLeftClick(bool up, unsigned int x, unsigned int y, bool* block
 }
 
 void ItemMover::OnRightClick(bool up, unsigned int x, unsigned int y, bool* block) {
-	UnitAny *unit = D2CLIENT_GetPlayerUnit();
+	UnitAny* unit = D2CLIENT_GetPlayerUnit();
 	bool shiftState = ((GetKeyState(VK_LSHIFT) & 0x80) || (GetKeyState(VK_RSHIFT) & 0x80));
 	bool ctrlState = ((GetKeyState(VK_LCONTROL) & 0x80) || (GetKeyState(VK_RCONTROL) & 0x80));
 	if (up || !unit || !(shiftState || ctrlState) || !Init()) {
@@ -347,15 +347,18 @@ void ItemMover::OnRightClick(bool up, unsigned int x, unsigned int y, bool* bloc
 		source = STORAGE_INVENTORY;
 		sourceX = (x - INVENTORY_LEFT) / CELL_SIZE;
 		sourceY = (y - INVENTORY_TOP) / CELL_SIZE;
-	} else if (stashUI && x >= STASH_LEFT && x <= STASH_RIGHT && y >= STASH_TOP && y <= STASH_BOTTOM) {
+	}
+	else if (stashUI && x >= STASH_LEFT && x <= STASH_RIGHT && y >= STASH_TOP && y <= STASH_BOTTOM) {
 		source = STORAGE_STASH;
 		sourceX = (x - STASH_LEFT) / CELL_SIZE;
 		sourceY = (y - STASH_TOP) / CELL_SIZE;
-	} else if (cubeUI && x >= CUBE_LEFT && x <= CUBE_RIGHT && y >= CUBE_TOP && y <= CUBE_BOTTOM) {
+	}
+	else if (cubeUI && x >= CUBE_LEFT && x <= CUBE_RIGHT && y >= CUBE_TOP && y <= CUBE_BOTTOM) {
 		source = STORAGE_CUBE;
 		sourceX = (x - CUBE_LEFT) / CELL_SIZE;
 		sourceY = (y - CUBE_TOP) / CELL_SIZE;
-	} else {
+	}
+	else {
 		return;
 	}
 
@@ -365,7 +368,6 @@ void ItemMover::OnRightClick(bool up, unsigned int x, unsigned int y, bool* bloc
 	}
 	*block = true;
 }
-
 void ItemMover::LoadConfig() {
 	BH::config->ReadKey("Use TP Tome", "VK_NUMPADADD", TpKey);
 	BH::config->ReadKey("Use Healing Potion", "VK_NUMPADMULTIPLY", HealKey);
@@ -411,10 +413,107 @@ void ItemMover::OnLoad() {
 
 }
 
+std::string RUNES[] = { "r01", "r02", "r03", "r04", "r05", "r06", "r07", "r08", "r09", "r10", "r11", "r12", "r13", "r14", "r15", "r16", "r17", "r18", "r19", "r20", "r21", "r22", "r23", "r24", "r25", "r26", "r27", "r28", "r29", "r30", "r31", "r32", "r33" };
+std::string JEWELS[] = { "jew" };
+std::string GEMS[] = {
+	"gcv", "gfv", "gcy", "gfy", "gcg", "gfg", "gcb", "gfb", "gzv",
+	"gcr", "gfr", "gcs", "gfs", "gcw", "gfw",               
+	"skc", "skf", "sku", "skl", "skz", "skg", "skq",        
+	"gpv", "gpy", "gpg", "gpb", "gpr", "gps", "gpw", "gly",  "glb", "glg", "glr", "glw", "gsv", "gsy", "gsb", "gsg", "gsr", "gsw"     
+};
+
+bool IsRuneJewelOrGem(char* code) {
+	for (const auto& rune : RUNES) {
+		if (code[0] == rune[0] && code[1] == rune[1] && code[2] == rune[2]) return true;
+	}
+	for (const auto& jewel : JEWELS) {
+		if (code[0] == jewel[0] && code[1] == jewel[1] && code[2] == jewel[2]) return true;
+	}
+	for (const auto& gem : GEMS) {
+		if (code[0] == gem[0] && code[1] == gem[1] && code[2] == gem[2]) return true;
+	}
+	return false;
+}
+
+
+void ItemMover::MoveRunesJewelsGemsToStash(bool* block) {
+	UnitAny* unit = D2CLIENT_GetPlayerUnit();
+	if (!unit) return;
+
+	Init();  
+
+	std::lock_guard<std::mutex> guard(itemsMutex);
+
+	itemsToMove.clear();
+
+	for (UnitAny* pItem = unit->pInventory->pFirstItem; pItem; pItem = pItem->pItemData->pNextInvItem) {
+		if (pItem->pItemData->ItemLocation != STORAGE_INVENTORY) continue;
+
+		char* code = D2COMMON_GetItemText(pItem->dwTxtFileNo)->szCode;
+		if (IsRuneJewelOrGem(code)) {
+			BYTE xSize = D2COMMON_GetItemText(pItem->dwTxtFileNo)->xSize;
+			BYTE ySize = D2COMMON_GetItemText(pItem->dwTxtFileNo)->ySize;
+
+			if (xSize == 1 && ySize == 1) {
+				itemsToMove.push_back(pItem);
+			}
+		}
+	}
+
+	moveThread = std::thread([this, block]() {
+		while (true) {
+			{
+				std::lock_guard<std::mutex> guard(itemsMutex);
+
+				if (itemsToMove.empty()) {
+					break;  
+				}
+			}
+
+			MoveNextItem(block);
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+		});
+
+	moveThread.detach();
+}
+
+
+void ItemMover::MoveNextItem(bool* block) {
+	Init();
+    if (isMovingItem) return;
+
+    if (itemsToMove.empty()) return;
+
+    UnitAny* pItem = itemsToMove.front();
+    itemsToMove.erase(itemsToMove.begin());
+
+    int xStart = pItem->pObjectPath->dwPosX;
+    int yStart = pItem->pObjectPath->dwPosY;
+    BYTE xSize = D2COMMON_GetItemText(pItem->dwTxtFileNo)->xSize;
+    BYTE ySize = D2COMMON_GetItemText(pItem->dwTxtFileNo)->ySize;
+
+    bool shiftState = false;  
+    bool ctrlState = false;   
+    bool stashUI = D2CLIENT_GetUIState(UI_STASH);
+    bool invUI = D2CLIENT_GetUIState(UI_INVENTORY);
+
+    bool moveItem = LoadInventory(D2CLIENT_GetPlayerUnit(), STORAGE_INVENTORY, xStart, yStart, shiftState, ctrlState, stashUI, invUI);
+
+    if (moveItem) {
+        isMovingItem = true;
+        PickUpItem();  
+    }
+}
 void ItemMover::OnKey(bool up, BYTE key, LPARAM lParam, bool* block)  {
 	UnitAny *unit = D2CLIENT_GetPlayerUnit();
 	if (!unit)
 		return;
+
+	if (!up && key == VK_DELETE) {
+	    MoveRunesJewelsGemsToStash(block);
+	}
 
 	if (!up && (key == HealKey || key == ManaKey || key == JuvKey)) {
 		int idx = key == JuvKey ? 2 : key == ManaKey ? 1 : 0;
@@ -520,7 +619,14 @@ void ItemMover::OnGamePacketRecv(BYTE* packet, bool* block) {
 					ActivePacket.startTicks = 0;
 					ActivePacket.destination = 0;
 				}
+				if (isMovingItem) {
+					isMovingItem = false;
+					if (D2CLIENT_GetCursorItem() == 0) {
+						MoveNextItem(block);
+					}
+				}
 				Unlock();
+
 			}
 
 			if ((*BH::MiscToggles2)["Advanced Item Display"].state) {

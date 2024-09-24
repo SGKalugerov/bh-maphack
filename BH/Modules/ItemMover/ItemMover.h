@@ -7,7 +7,9 @@
 #include "../../BitReader.h"
 #include "../Item/ItemDisplay.h"
 #include "../../MPQInit.h"
-
+#include <thread>
+#include <chrono>
+#include <mutex>
 extern int INVENTORY_WIDTH;
 extern int INVENTORY_HEIGHT;
 extern int STASH_WIDTH;
@@ -99,7 +101,8 @@ public:
 	void PickUpItem();
 	void PutItemInContainer();
 	void PutItemOnGround();
-
+	void MoveRunesJewelsGemsToStash(bool* block);
+	void MoveNextItem(bool* block);
 	void LoadConfig();
 
 	void OnLoad();
@@ -108,6 +111,12 @@ public:
 	void OnRightClick(bool up, unsigned int x, unsigned int y, bool* block);
 	void OnGamePacketRecv(BYTE* packet, bool *block);
 	void OnGameExit();
+
+	std::vector<UnitAny*> itemsToMove;
+	bool isMovingItem = false;
+	std::thread moveThread;
+	std::mutex itemsMutex;
+
 };
 
 
