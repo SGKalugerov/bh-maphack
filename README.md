@@ -19,6 +19,6 @@ Feel free to use it, fork it or whatever, just make sure you give credits to the
 - Added stats and base stats display to the player stats menu.
 - Increased chest size and made locked chests have orange color on the minimap.
 - (1.13d) Added workaround for - Reveal Type Game/Act doesn't reveal certain levels, mainly ones whose entrance is a Red Portal. Pindle area, Nihlatak Temple, Arcane, Duriel.
-- (1.13d) Commented out ChannelInput intercept.
+- (1.13d) Commented out ChannelInput intercept. (crashes game)
 - Added Merc's skills and levels in the StatDisplay menu (8).
 - Added autostasher for jewels, runes and gems.
